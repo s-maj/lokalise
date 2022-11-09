@@ -1,11 +1,12 @@
 resource "aws_ecs_service" "service" {
   for_each = var.deployments
 
-  name            = "${var.name}-${each.key}"
-  cluster         = aws_ecs_cluster.cluster.id
-  task_definition = aws_ecs_task_definition.task[each.key].arn
-  desired_count   = var.desired_count
-  tags            = var.tags
+  name               = "${var.name}-${each.key}"
+  cluster            = aws_ecs_cluster.cluster.id
+  task_definition    = aws_ecs_task_definition.task[each.key].arn
+  desired_count      = var.desired_count
+  execution_role_arn = aws_iam_role.ecs_task.arn
+  tags               = var.tags
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE"
@@ -55,6 +56,8 @@ resource "aws_ecs_task_definition" "task" {
     }
   ])
 }
+
+
 
 resource "aws_lb_target_group" "target_group" {
   for_each = var.deployments
