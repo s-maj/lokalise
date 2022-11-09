@@ -57,8 +57,6 @@ resource "aws_ecs_task_definition" "task" {
   ])
 }
 
-
-
 resource "aws_lb_target_group" "target_group" {
   for_each = var.deployments
 
