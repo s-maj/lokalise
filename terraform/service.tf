@@ -33,6 +33,7 @@ resource "aws_ecs_task_definition" "task" {
   network_mode             = "awsvpc"
   cpu                      = var.cpu
   memory                   = var.memory
+  execution_role_arn       = aws_iam_role.ecs_task.arn
   tags                     = var.tags
 
   container_definitions = jsonencode([
@@ -40,6 +41,14 @@ resource "aws_ecs_task_definition" "task" {
       name      = var.name
       image     = each.value
       essential = true
+      logConfiguration : {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = "${var.name}-${each.key}"
+          awslogs-region        = var.region,
+          awslogs-stream-prefix = aws_ecs_cluster.cluster.name
+        }
+      },
       portMappings = [
         {
           containerPort = 8000
@@ -84,6 +93,11 @@ resource "aws_lb_listener_rule" "listener_rule" {
     type = "forward"
 
     forward {
+      stickiness {
+        enabled  = true
+        duration = 3
+      }
+
       dynamic "target_group" {
         for_each = var.deployments
 
