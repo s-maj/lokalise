@@ -1,12 +1,11 @@
 resource "aws_ecs_service" "service" {
   for_each = var.deployments
 
-  name               = "${var.name}-${each.key}"
-  cluster            = aws_ecs_cluster.cluster.id
-  task_definition    = aws_ecs_task_definition.task[each.key].arn
-  desired_count      = var.desired_count
-  execution_role_arn = aws_iam_role.ecs_task.arn
-  tags               = var.tags
+  name            = "${var.name}-${each.key}"
+  cluster         = aws_ecs_cluster.cluster.id
+  task_definition = aws_ecs_task_definition.task[each.key].arn
+  desired_count   = var.desired_count
+  tags            = var.tags
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE"
@@ -34,6 +33,7 @@ resource "aws_ecs_task_definition" "task" {
   network_mode             = "awsvpc"
   cpu                      = var.cpu
   memory                   = var.memory
+  execution_role_arn       = aws_iam_role.ecs_task.arn
   tags                     = var.tags
 
   container_definitions = jsonencode([
@@ -41,6 +41,14 @@ resource "aws_ecs_task_definition" "task" {
       name      = var.name
       image     = each.value
       essential = true
+      logConfiguration : {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = "${var.name}-${each.key}"
+          awslogs-region        = var.region,
+          awslogs-stream-prefix = aws_ecs_cluster.cluster.name
+        }
+      },
       portMappings = [
         {
           containerPort = 8000
