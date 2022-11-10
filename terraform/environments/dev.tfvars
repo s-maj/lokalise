@@ -7,8 +7,8 @@ public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
 active_deployment = "blue"
 deployments       = {
-  "blue"  = "public.ecr.aws/nginx/nginx:stable",
-  "green" = "public.ecr.aws/nginx/nginx:stable"
+  "blue"  = "357390041162.dkr.ecr.eu-west-1.amazonaws.com/test-app:latest",
+  "green" = "357390041162.dkr.ecr.eu-west-1.amazonaws.com/test-app:latest"
 }
 
 tags = {
