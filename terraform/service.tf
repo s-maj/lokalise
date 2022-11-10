@@ -93,6 +93,11 @@ resource "aws_lb_listener_rule" "listener_rule" {
     type = "forward"
 
     forward {
+      stickiness {
+        enabled  = true
+        duration = 3
+      }
+
       dynamic "target_group" {
         for_each = var.deployments
 
