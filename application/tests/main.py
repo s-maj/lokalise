@@ -15,7 +15,7 @@ app_url = os.environ["APP_URL"]
 
 async def producer(client, queue):
     while True:
-        r = client.get("app_url")
+        r = client.get(app_url)
         await queue.put(r)
         await asyncio.sleep(0.1)
 
